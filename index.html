@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socratic Questioning Challenge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        #game-area {
+            display: flex;
+            justify-content: space-between;
+        }
+        #statements, #categories {
+            width: 45%;
+        }
+        .statement, .category {
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .category {
+            background-color: #c8e6c9;
+            border: 2px solid #2e7d32;
+            min-height: 80px;
+        }
+        .statement {
+            background-color: #ffcc80;
+            border: 2px solid #ef6c00;
+        }
+        .correct {
+            background-color: #4caf50 !important;
+        }
+        .incorrect {
+            background-color: #f44336 !important;
+        }
+        #score {
+            font-size: 20px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>Socratic Questioning Challenge</h1>
+    <p id="instructions">Drag the statements to the correct Socratic question categories! Socratic question allow you to ask yourself about what you have stated, to become critical and build out your points. In critical writing, it is important to analyse and provide evidence rather than simply stating claims. See the example, "Inceoglu et al., (2018) claim Leader Member Exchange (LMX) theory of leadership is the most effective theory for understanding how leadership shapes employee performance. This is a brief statement, with no critical analysis or evidence."</p>
+    <p id="score">Score: 0</p>
+
+    <div id="game-area">
+        <div id="statements">
+            <div class="statement" draggable="true" id="statement4">On the other hand, LMX can be seen to have a negative effect on employee performance if some individuals perceive unequal resource distribution and injustice created (Hooper & Martin, 2008).</div>
+                        <div class="statement" draggable="true" id="statement1">Research found LMX produces better relationships with employees, which in turn improves 
+performance and gives employees more autonomy and responsibility, improving their well-being (Martin et al., 2005).</div>
+            <div class="statement" draggable="true" id="statement5">This implies that it is therefore difficult to assume a set style of leadership to achieve effectiveness, and according to this view, different styles affect individuals differently.</div>
+            <div class="statement" draggable="true" id="statement3">However, it is argued that the studies lack validity due to limited research, with questions asked only leading to positive outcomes to support the claim, and therefore reliability suffers.</div>
+        </div>
+        <div id="categories">
+            <div class="category" id="cat1">What is the evidence or proof?</div>
+            <div class="category" id="cat2">Are the evidence and examples valid and reliable?</div>
+            <div class="category" id="cat3">Are there any alternative views or opinions?</div>
+            <div class="category" id="cat4">What might this mean in practice?</div>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+
+        const statements = document.querySelectorAll('.statement');
+        const categories = document.querySelectorAll('.category');
+
+        statements.forEach(statement => {
+            statement.addEventListener('dragstart', dragStart);
+        });
+
+        categories.forEach(category => {
+            category.addEventListener('dragover', dragOver);
+            category.addEventListener('drop', drop);
+        });
+
+        function dragStart(e) {
+            e.dataTransfer.setData('text', e.target.id);
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            const id = e.dataTransfer.getData('text');
+            const statement = document.getElementById(id);
+            const categoryId = e.target.id;
+
+            if (isCorrectDrop(id, categoryId)) {
+                if (!e.target.querySelector(`#${id}`)) {
+                    e.target.appendChild(statement);
+                    statement.classList.add('correct');
+                    updateScore(10);
+                }
+            } else {
+                statement.classList.add('incorrect');
+                setTimeout(() => {
+                    statement.classList.remove('incorrect');
+                }, 500);
+                updateScore(-5);
+            }
+        }
+
+        function isCorrectDrop(statementId, categoryId) {
+            const correctMapping = {
+                'statement1': 'cat1',
+                                'statement3': 'cat2',
+                'statement4': 'cat3',
+                'statement5': 'cat4'
+            };
+            return correctMapping[statementId] === categoryId;
+        }
+
+        function updateScore(points) {
+            score += points;
+            document.getElementById('score').innerText = 'Score: ' + score;
+        }
+    </script>
+</body>
+</html>
